@@ -1,113 +1,61 @@
-# Epidemic Contact Tracing Using Graph Analytics (Neo4j)
+# Epidemic Contact Tracing Through Graph Insights
 
-## 🧩 What problem are we trying to solve?
+How can we better understand and react to an epidemic using digital tools? When a virus spreads within a community, it's essential to identify who might be infected, which places carry the most risk, and how the contagion evolves through social contacts.
 
-During a pandemic, health agencies need to answer urgent questions:
-
-- Who was in contact with infected individuals?
-- Are there superspreaders in the population?
-- Which places are likely contamination hotspots?
-- Can we detect communities where the virus circulates rapidly?
-
-Traditional tabular analysis doesn't capture these interactions efficiently.
-
-We explore how **graph databases and algorithms** help answer these questions **in real time**.
+Rather than relying on flat tables and databases, we leverage **graph modeling** to gain a clearer, more dynamic view.
 
 ---
 
-## 🧠 Why use a graph model?
+## 🔍 Discovering the Network Behind Infections
 
-Each person becomes a **node**. Each place visited becomes another node. The **VISITS** relationships represent interactions. From this, we derive new relationships like **MEETS**, when two people were at the same place at the same time.
+Imagine each individual as a **node**, and each location visited as another node. When a person visits a location, a **VISITS** connection is created. From these visits, we infer new links — such as **MEETS**, when two people are present at the same place at the same time.
 
-This graph structure allows us to ask powerful questions with Cypher.
-
----
-
-## 🚀 Questions we solve with Cypher & Neo4j
-
-### 1. What is the structure of our epidemic graph?
-
-We start by exploring the graph schema, node types and relationships using:
-
-```cypher
-CALL db.schema.visualization();
-MATCH (n) RETURN labels(n), keys(n);
-```
+This structure allows us to analyze how the disease spreads across the network.
 
 ---
 
-### 2. Who might be infected by contact?
+## 🎯 Key Questions Explored
 
-If someone is sick, who has visited the same places?
+- **Contact Tracing**: Who has potentially been exposed to the virus by visiting the same places as infected individuals?
+- **Superspreaders**: Are there people who are central to many transmission paths?
+- **Risky Locations**: Which locations have been visited most often by sick individuals?
+- **Communities at Risk**: Are there subgroups where the virus circulates intensely?
 
-```cypher
-MATCH (:Person {healthstatus: 'Sick'})-[:VISITS]->(:Place)<-[:VISITS]-(p:Person)
-RETURN DISTINCT p;
-```
-
-We progressively reconstruct potential exposure chains.
+We address these with network analytics, identifying patterns and high-risk zones.
 
 ---
 
-### 3. Are some individuals key in the epidemic spread?
+## 📊 Graph-Based Analysis
 
-We compute **PageRank** and **Betweenness Centrality** to find:
+Using the power of graph theory, we apply:
+- **PageRank** to highlight influential individuals in the network.
+- **Betweenness Centrality** to find people who connect separate groups.
+- **Community Detection (Louvain)** to identify clusters with intense transmission.
+- **SCC (Tarjan)** to detect tightly connected components.
 
-- Individuals who act as major spreaders
-- People central to many transmission paths
-
-```cypher
-CALL gds.pageRank.write({...});
-CALL gds.alpha.betweenness.stream({...});
-```
+Each metric brings a new lens for epidemic monitoring.
 
 ---
 
-### 4. Can we identify high-risk communities?
+## 🧪 Performance Insights
 
-By analyzing interaction durations between people, we apply:
+We measured the performance of our analyses with Python, comparing how quickly each algorithm runs and what insights it reveals. Visualizations help interpret the results:
 
-- **Louvain**: to detect transmission communities
-- **Tarjan's SCC**: to detect isolated or cyclic zones
-
-This allows us to see **clusters of infection**.
-
----
-
-### 5. How efficient are these algorithms?
-
-We benchmarked PageRank, Betweenness, Louvain, and SCC using Python + Neo4j driver.  
-Results were visualized in histograms (see `/screenshots/`).
-
-Key finding:
-- **PageRank is fast and effective**
-- **Betweenness is powerful but computationally heavier**
-- **SCC failed to find large components**, revealing structural gaps in the graph
+- PageRank is fast and informative.
+- Betweenness is powerful but slower.
+- SCC found isolated nodes — suggesting gaps or limits in network connectivity.
 
 ---
 
-## 💡 Conclusion
+## 🧭 What You'll Find in This Project
 
-This project shows how **graph thinking** transforms epidemic analysis:
-- It enables fast, rich querying
-- It helps visualize social structures and risk patterns
-- It’s adaptable to real-time data and decision-making
-
-Graph databases like Neo4j are powerful tools in the fight against pandemics.
-
----
-
-## 📁 Project Contents
-
-- `queries.md` – All Cypher queries with explanations
-- `rapport_GEDA.pdf` – Analysis and interpretation
-- `projet_KHAYAR_GEDA_2024.txt` – Raw ENSIIE deliverable
-- `screenshots/` – Graph and histogram visualizations
+- `queries.md` – Core graph queries used in the analysis.
+- `install.md` – Step-by-step guide to set up and run the project locally.
+- Visualizations of graphs and execution time histograms.
 
 ---
 
 ## 👤 Author
 
 Project developed by **Khayar Anas**  
-[LinkedIn](https://www.linkedin.com)  
-Passionate about data science, graph analytics, and cybersecurity.
+Passionate about data science, networks, and cybersecurity.
